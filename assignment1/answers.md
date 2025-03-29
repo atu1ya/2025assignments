@@ -28,15 +28,40 @@ See `speedrunning.py`.
 ## Question 4 (1 mark)
 Give an argument for the correctness and complexity of your `__init__()` function.
 
-The __init__() function ensures correctness by sorting the initial list with merge sort, to acquire the required ranking order. Merge Sort is a sorting algorithm that ensures runs with the same time remain in alphabetical order by name. Merge sort has a recurrence relation of T(n) = 2T(n/2) + O(n), which solves to O(n log n + n). Dropping the lower order term, this leaves the final complexity as O(n log n). 
+My `__init__()` function correctly organizes the leaderboard using merge sort, which is perfect for this task since it preserves the order of equal elements (it's "stable"). This stability is crucial when we need to break ties by runner name.
+
+The sorting compares runs in exactly the right way - first by looking at times (faster times come first), and when times are identical, it sorts alphabetically by runner name. This gives us exactly the ordering we need.
+
+For very small inputs (empty or single-element lists), the function simply returns them since they're already sorted. For everything else, it splits the list in half, sorts each part recursively, and then carefully merges them back together.
+
+Time complexity-wise, merge sort follows the T(n) = 2T(n/2) + O(n) pattern, which works out to O(n log n) - much better than simpler sorting algorithms for larger datasets. The space requirements are O(n) for the temporary arrays needed during merging.
 
 ## Question 5 (1 mark)
 Give an argument for the correctness and complexity of your `submit_run()` function.
 
-The submit_run() function correctly inserts new speedruns, while still maintain the sorted order. It uses binary search which has a time complexity of O(log n) to find the correct insertion point. Then to insert the time, there is a complexity O(n) as a worst case, which uses the assumption that every item in the list needs to be moved. This ensures runs remain sorted, and the insertion logic is correct because the binary search finds the first valid position for the new run.
+The submit_run() function correctly maintains the sorted order of the leaderboard by finding the proper insertion position for a new run. Since the leaderboard is already sorted by time (and alphabetically by name for ties), we can exploit this property to efficiently locate the insertion point.
+
+The function uses binary search to find the correct insertion position. Starting with the entire leaderboard as the search range, it repeatedly compares the midpoint run with the new run. If the midpoint run has a smaller time (or equal time but alphabetically smaller name), we know our insertion point must be after the midpoint. Otherwise, it must be before or at the midpoint. This halves our search space in each iteration.
+
+When the binary search terminates, the low index points to the position where the new run should be inserted to maintain the sorted order - either before the first run with a larger time, or before the first run with the same time but alphabetically larger name.
+
+For complexity, the binary search portion operates in O(log n) time, where n is the number of runs in the leaderboard. However, the actual insertion using Python's list.insert() requires shifting elements to make room, which takes O(n) time in the worst case (when inserting at the beginning of the list). Therefore, the overall time complexity is O(log n + n), which simplifies to O(n).
+
 
 
 ## Question 6 (1 mark)
 Give an argument for the correctness and complexity of your `count_time()` function.
 
-The count_time() function correctly coutns occurrences of a given time using two binary searches: one to find the first occurence, and another for the last. Each search operates in O(log n) time, giving a total complexity of O(log n + log n) = O(2 log n). Dropping the constant factor, the final complexity remains O(log n). This ensures efficient lookup compared to a linear scan which would O(n) time.
+The count_time() function correctly counts occurrences of a specific time in the leaderboard by using binary search to efficiently locate the boundaries of the range where this time appears.
+
+Since the leaderboard is maintained in sorted order by time, all runs with the same time value must appear consecutively in the array. Therefore, to count occurrences, we need only find the first and last indices where the target time appears, then calculate the difference between these positions.
+
+The function implements two specialized binary searches:
+
+find_first() locates the leftmost occurrence by continuing to search left even after finding a match
+find_last() locates the rightmost occurrence by continuing to search right after finding a match
+For each binary search, we maintain a search range that is halved in each iteration. When comparing the middle element to our target time, we not only determine which half to search next but also update our result variable whenever we find a match. This ensures that even when multiple matches exist, we converge on the boundary positions.
+
+The correctness is guaranteed because binary search will always converge on the correct position in a sorted array, and our modified versions will find the exact boundaries of the range containing our target time.
+
+For complexity, each binary search performs O(log n) comparisons, where n is the number of runs in the leaderboard. Since we perform two binary searches sequentially, the overall time complexity remains O(log n), which is significantly more efficient than a linear scan of O(n) that would be required without binary search.
