@@ -1,0 +1,121 @@
+In labs for this unit, we aim for you to get some practise with the process of analysing, solving, and explaining a computer science problem.
+Eventually we expect you should be able to solve these problems unaided, but in these labs we will provide guidance and milestones, with the intention being that you fill the specified gaps.
+
+You are encouraged to discuss these problems with your classmates, though anything you submit for assessment must be your own original work.
+Your writings should be from your own understanding, not paraphrased from an external source.
+Your code must be your own, and you should understand the decision process behind why you implemented the code as you did.
+
+
+
+# CITS2200 Lab 2: Genealogy
+
+In Lab 1 we walked you through the specific steps of a formal problem solving process.
+We will not provide such a process in this lab, and you are welcome to follow whatever process works best for you.
+If you get stuck, however, remember to work through the process to make sure you aren't skipping any stages.
+
+
+## Description
+
+You are the captain of an interstellar ship on a diplomatic mission to discover and befriend alien civilizations.
+You have recently discovered the home world of the Kiktil.
+The Kiktil are a friendly species, and individuals are happy to talk to you and help you however they can, but as you raise the topic of a more formal declaration of friendship between your two governments, you encounter some complications.
+
+The Kiktil system of government is somewhere between a hive mind and a direct democracy (the Kiktili word has no direct translation).
+Unfortunately this means they have no head of state or leader for you to speak to, and no one individual is comfortable speaking on behalf of the whole.
+Previously, they have solved this problem by appointing an Envoy to act as interface between the Kiktil and other species, and would like to do so again, but are struggling to figure out exactly who the Envoy should be.
+
+The Kiktil reproduce asexually, meaning every member of the species is descended from the first sapient Kiktil, known as the Originator.
+Previously, the Kiktil have chosen their Envoy by order of succession from the Originator, but the problem is that their civilization has grown enormously since they last had to elect an Envoy, and they are struggling to figure out who is meant to serve as Envoy.
+Worse than that, they can't even remember for certain whether their order of succession is by [primogeniture](https://en.wikipedia.org/wiki/Order_of_succession#Primogeniture) or [seniority](https://en.wikipedia.org/wiki/Order_of_succession#Seniority).
+
+By primogeniture, succession flows from parent to eldest child, only moving to the next youngest sibling after all their elder sibling's descendants.
+
+Seniority order prioritizes proximity to the Originator, only moving on to a younger generation after every individual in the previous generations.
+Within a generation, older siblings come before younger, and cousins are prioritized by oldest different ancestor.
+
+The Kiktil have asked for your help in determining who should be Envoy.
+They have records of the parent of every Kiktil going back to the Originator, but would like your help determining the two possible succession orders so they can determine which one they are meant to be using and who that means the Envoy should be.
+
+While you're at it, they would also appreciate if you could help them figure out how closely related any two Kiktil are.
+Specifically, given the names of two individuals, they would like to know what degree of cousins they are, and how far removed.
+
+Further details and complexity targets are given in the doc comments of `genealogy.py`.
+
+**Note:** The problem of finding cousin distance between two individuals is intended to be a problem you have not seen before, so as to allow you to develop your own algorithm from scratch.
+You should be able to, and are **strongly** encouraged to attempt to solve the problem yourself before researching existing algorithms.
+
+
+## Design
+
+Come up with a design for how you are going to solve this problem, then answer the following questions:
+
+**Question 1 (1 mark):**
+Write a simple description of how you are going to represent the problem as a data structure.
+Your description should justify how the representation is going to help you solve the problem within the target complexities.
+
+**Question 2 (1 mark):**
+Write a simple description of the algorithm you have designed for `get_cousin_dist()`.
+Your description should justify the correctness of your algorithm, and make an argument as to its time complexity.
+
+Write your answers in the spaces provided in `answers.md`.
+
+
+## Implementation
+
+**Question 3 (5 marks):**
+Implement your design by filling out the method stubs in the `Genealogy` class found in `genealogy.py`.
+You are **not** allowed to import any modules.
+
+**Warning:** Remember the `.insert()` method of Python `list`s is not constant time.
+
+
+## Analysis
+
+**Question 4 (1 mark):**
+Give an argument for the correctness and complexity of your `get_primogeniture_order()` function.
+
+**Question 5 (1 mark):**
+Give an argument for the correctness and complexity of your `get_seniority_order()` function.
+
+**Question 5 (1 mark):**
+Give a brief explanation of the function and purpose of any data structures you implemented.
+
+Write your answers in the spaces provided in `answers.md`.
+
+
+## Extension
+
+Consider the following questions:
+1. How might your implementation change if the Kiktil reproduced sexually with every individual having two parents? Three?
+2. What if succession order was instead determined by number of descendants?
+
+
+
+# Assessment
+
+This lab is marked out of 10 marks and is worth 10% of your unit mark.
+
+## Submitting
+
+Submit only `genealogy.py` and `answers.md` to cssubmit.
+Ensure your name and student number are in the spaces provided at the top of both files.
+
+## Marking Rubric
+
+Each assessable component of this lab relates to some of the learning outcomes for this unit.
+For reference, the learning outcomes for this unit are that students should be able to:
+1. Undertake problem identification via abstraction
+2. Describe common and important data structures and algorithms in the computing discipline
+3. Implement a range of data structures and information literacy algorithms in a high-level programming language
+4. Apply existing data structures and algorithms from pre-built software libraries
+5. Design data structures and algorithms
+6. Critically assess the performance of different data structures and algorithms
+
+| Question | Basic                                              | Proficient                 | Total | Outcomes |
+| -------- | -------------------------------------------------- | -------------------------- | ----- | -------- |
+| 1        | (+1) Justifies a logical representation            |                            | /1    | 1, 2, 5  |
+| 2        | (+1) Provides convincing justification of design   |                            | /1    | 1, 2, 6  |
+| 3        | (+2) Passes at least 50% of provided unit tests    | (+3) Passes all unit tests | /5    | 2, 3     |
+| 4        | (+1) Provides convincing argument                  |                            | /1    | 2, 6     |
+| 5        | (+1) Provides convincing argument                  |                            | /1    | 2, 6     |
+| 6        | (+1) Accurately identifies function of structures  |                            | /1    | 2        |
