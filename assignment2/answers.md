@@ -1,8 +1,8 @@
 # CITS2200 Lab 2: Genealogy
 
-Name: YOUR NAME
+Name: ATULYA CHATURVEDI
 
-Student Number: 23XXXXXX
+Student Number: 24225113
 
 
 ## Question 1 (1 mark)

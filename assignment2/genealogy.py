@@ -1,5 +1,5 @@
-# Name: YOUR NAME
-# Student Number: 23XXXXXX
+# Name: ATULYA CHATURVEDI
+# Student Number: 24225113
 
 class Genealogy:
     """The genealogy and succession order for Envoy of the Kiktil."""
