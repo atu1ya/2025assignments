@@ -77,7 +77,7 @@ Give an argument for the correctness and complexity of your `get_primogeniture_o
 **Question 5 (1 mark):**
 Give an argument for the correctness and complexity of your `get_seniority_order()` function.
 
-**Question 5 (1 mark):**
+**Question 6 (1 mark):**
 Give a brief explanation of the function and purpose of any data structures you implemented.
 
 Write your answers in the spaces provided in `answers.md`.
