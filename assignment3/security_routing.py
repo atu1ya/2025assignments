@@ -35,4 +35,43 @@ def security_route(stations, segments, source, target):
         The minimum length of time required to get from `source` to `target`, or
         `None` if no route exists.
     """
-    pass
+    import heapq
+    
+    # Initialize distances
+    distances = {}
+    for station in range(len(stations)):
+        for clearance in list(Clearance):
+            distances[(station, clearance)] = float('inf')
+    
+    # Start at the source with NONE clearance
+    distances[(source, Clearance.NONE)] = 0
+    pq = [(0, source, Clearance.NONE)]  # (time, station, clearance)
+    
+    while pq:
+        time, station, clearance = heapq.heappop(pq)
+        
+        # If we've found a longer path to this (station, clearance), skip
+        if time > distances[(station, clearance)]:
+            continue
+        
+        # If we've reached the target, return the time
+        if station == target:
+            return time
+        
+        # Option 1: Update clearance at the current station
+        station_clearance = stations[station]
+        if station_clearance != Clearance.NONE:
+            if time < distances[(station, station_clearance)]:
+                distances[(station, station_clearance)] = time
+                heapq.heappush(pq, (time, station, station_clearance))
+        
+        # Option 2: Move to a neighboring station
+        for u, v, t, c in segments:
+            if u == station and clearance >= c:  # We can take this segment
+                new_time = time + t
+                if new_time < distances[(v, clearance)]:
+                    distances[(v, clearance)] = new_time
+                    heapq.heappush(pq, (new_time, v, clearance))
+    
+    # If we can't reach the target, return None
+    return None
