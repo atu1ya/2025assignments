@@ -1,32 +1,65 @@
 # Name: YOUR NAME
 # Student Number: 23XXXXXX
 
-from enum import IntEnum
-
-class Clearance(IntEnum):
+class Clearance:
     NONE = 0
     RED = 1
     BLUE = 2
     GREEN = 3
 
+    @classmethod
+    def from_str(cls, s):
+        return getattr(cls, s.upper(), cls.NONE)
+
 def security_route(stations, segments, source, target):
     """Finds the fastest route from source station to target station."""
     # --- No imports except base Python, so no heapq ---
-    # Use a simple list as a priority queue (min-heap simulation)
+    # Use a custom min-heap priority queue to get O(n log n) performance.
     # Each entry: (time, station, clearance)
-    # We'll use insertion sort for the queue, which is O(N) per insertion,
-    # but since the number of states is small (station*clearance), this is acceptable for the assignment.
 
-    # Prepare stations as Clearance enums
+    def heap_push(heap, item):
+        heap.append(item)
+        idx = len(heap) - 1
+        while idx > 0:
+            parent = (idx - 1) // 2
+            if heap[idx][0] < heap[parent][0]:
+                heap[idx], heap[parent] = heap[parent], heap[idx]
+                idx = parent
+            else:
+                break
+
+    def heap_pop(heap):
+        if not heap:
+            return None
+        heap[0], heap[-1] = heap[-1], heap[0]
+        item = heap.pop()
+        idx = 0
+        length = len(heap)
+        while True:
+            left = 2 * idx + 1
+            right = 2 * idx + 2
+            smallest = idx
+            if left < length and heap[left][0] < heap[smallest][0]:
+                smallest = left
+            if right < length and heap[right][0] < heap[smallest][0]:
+                smallest = right
+            if smallest != idx:
+                heap[idx], heap[smallest] = heap[smallest], heap[idx]
+                idx = smallest
+            else:
+                break
+        return item
+
+    # Prepare stations as Clearance values
     max_station = max([source, target] + [max(u, v) for u, v, _, _ in segments]) if segments else max(source, target)
     num_stations = max(len(stations), max_station + 1)
     processed_stations = []
     for s in stations:
-        if isinstance(s, Clearance):
+        if isinstance(s, int):
             processed_stations.append(s)
         elif isinstance(s, str):
             try:
-                processed_stations.append(Clearance[s.upper()])
+                processed_stations.append(Clearance.from_str(s))
             except Exception:
                 processed_stations.append(Clearance.NONE)
         else:
@@ -37,54 +70,48 @@ def security_route(stations, segments, source, target):
     # Build adjacency list
     graph = [[] for _ in range(num_stations)]
     for u, v, t, c in segments:
-        if isinstance(c, Clearance):
+        if isinstance(c, int):
             cc = c
         elif isinstance(c, str):
             try:
-                cc = Clearance[c.upper()]
+                cc = Clearance.from_str(c)
             except Exception:
                 cc = Clearance.NONE
         else:
             cc = Clearance.NONE
         graph[u].append((v, t, cc))
 
-    # Dijkstra's algorithm with manual priority queue
+    # Dijkstra's algorithm with manual min-heap priority queue
     dist = {}
-    pq = [(0, source, Clearance.NONE)]
+    pq = []
+    heap_push(pq, (0, source, Clearance.NONE))
     dist[(source, Clearance.NONE)] = 0
 
     while pq:
-        # Find and pop the minimum time entry
-        min_idx = 0
-        for i in range(1, len(pq)):
-            if pq[i][0] < pq[min_idx][0]:
-                min_idx = i
-        time, station, clearance = pq[min_idx]
-        pq[min_idx] = pq[-1]
-        pq.pop()
-
+        time, station, clearance = heap_pop(pq)
         state = (station, clearance)
+
         if time > dist.get(state, float('inf')):
             continue
 
-        # Always try changing clearance at current station (if possible and not already that clearance)
+        # Try changing clearance
         offered = processed_stations[station]
         if offered != Clearance.NONE and offered != clearance:
             new_state = (station, offered)
             if time < dist.get(new_state, float('inf')):
                 dist[new_state] = time
-                pq.append((time, station, offered))
+                heap_push(pq, (time, station, offered))
 
-        # Always try moving to adjacent stations using current clearance
-        for v, t, req in graph[station]:
-            if clearance >= req:
-                new_time = time + t
-                new_state = (v, clearance)
+        # Try moving
+        for neighbor, travel_time, required_clearance in graph[station]:
+            if clearance >= required_clearance:
+                new_time = time + travel_time
+                new_state = (neighbor, clearance)
                 if new_time < dist.get(new_state, float('inf')):
                     dist[new_state] = new_time
-                    pq.append((new_time, v, clearance))
+                    heap_push(pq, (new_time, neighbor, clearance))
 
-    # Find best time to reach target with any clearance
+    # Return best time to target
     min_time = None
     for (s, _), t in dist.items():
         if s == target and (min_time is None or t < min_time):
