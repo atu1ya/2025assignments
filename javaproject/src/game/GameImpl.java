@@ -79,20 +79,16 @@ public class GameImpl implements Game {
         return new GameImpl(size, grid, currentPlayer, over, winner);
     }
 
-    // ...existing code...
     private void updateGameStatus() {
         if (over) return;
-    // Check if WHITE wins
         if (PathFinder.topToBottom(grid, PieceColour.WHITE) || PathFinder.leftToRight(grid, PieceColour.WHITE)) {
             over = true;
             winner = PieceColour.WHITE;
     }
-    // Check if BLACK wins
         else if (PathFinder.topToBottom(grid, PieceColour.BLACK) || PathFinder.leftToRight(grid, PieceColour.BLACK)) {
             over = true;
             winner = PieceColour.BLACK;
     }
-    // Draw (no moves left)
         else if (getMoves().isEmpty()) {
             over = true;
             winner = PieceColour.NONE;

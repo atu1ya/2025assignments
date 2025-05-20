@@ -1,6 +1,5 @@
 package game.tests;
 
-import java.util.Collection;
 import game.*;
 
 public class GameTest extends Test {
