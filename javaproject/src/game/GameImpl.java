@@ -3,8 +3,8 @@ package game;
 import java.util.*;
 
 /**
- * Implementation of the Game interface for a two-player connection game.
- * Handles game state, move validation, and win/draw detection.
+ * Implementation of Game interface that manages a connect-4 style game
+ * where players aim to create paths across the grid.
  */
 public class GameImpl implements Game {
     private final int size;
@@ -14,8 +14,10 @@ public class GameImpl implements Game {
     private PieceColour winner;
 
     /**
-     * Constructs a new game with the given grid size.
-     * Throws IllegalArgumentException if size is less than 4.
+     * Constructs a game with the given grid size.
+     * 
+     * @param size The size of the grid (must be at least 4)
+     * @throws IllegalArgumentException if size is less than 4
      */
     public GameImpl(int size) {
         if (size < 4) {
@@ -29,7 +31,7 @@ public class GameImpl implements Game {
     }
 
     /**
-     * Copy constructor for deep copying the game state.
+     * Copy constructor for creating a deep copy of the game state.
      */
     private GameImpl(int size, GridImpl grid, PieceColour currentPlayer, boolean over, PieceColour winner) {
         this.size = size;
@@ -39,43 +41,34 @@ public class GameImpl implements Game {
         this.winner = winner;
     }
 
-    /**
-     * Returns true if the game is over (win or draw).
-     * Updates the game status if necessary.
-     */
     @Override
     public boolean isOver() {
         if (!over) updateGameStatus();
         return over;
     }
 
-    /**
-     * Returns the winner of the game, or PieceColour.NONE if there is no winner.
-     * Updates the game status if necessary.
-     */
     @Override
     public PieceColour winner() {
         if (!over) updateGameStatus();
         return winner;
     }
 
-    /**
-     * Returns the current player.
-     * If the game is over, the result is undefined.
-     */
     @Override
     public PieceColour currentPlayer() {
         return currentPlayer;
     }
 
     /**
-     * Returns a collection of all valid moves for the current player.
+     * Returns all valid moves for the current player.
      * If the game is over, returns an empty collection.
+     * 
+     * @return An unmodifiable collection of valid moves
      */
     @Override
     public Collection<Move> getMoves() {
         List<Move> moves = new ArrayList<>();
-        if (over) return moves;
+        if (over) return Collections.unmodifiableList(moves);
+        
         for (int r = 0; r < size; r++) {
             for (int c = 0; c < size; c++) {
                 if (grid.getPiece(r, c) == PieceColour.NONE) {
@@ -83,55 +76,52 @@ public class GameImpl implements Game {
                 }
             }
         }
-        return moves;
+        return Collections.unmodifiableList(moves);
     }
 
     /**
-     * Executes a move for the current player.
-     * Throws IllegalArgumentException if the move is invalid or null.
-     * Resets the game status so it will be recalculated on the next query.
+     * Executes a move for the current player and switches to the other player.
+     * 
+     * @param move The move to execute
+     * @throws IllegalArgumentException if the move is null, out of bounds, or targets an occupied cell
      */
     @Override
     public void makeMove(Move move) {
         if (move == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Move cannot be null");
         }
         int r = move.getRow(), c = move.getCol();
         if (r < 0 || r >= size || c < 0 || c >= size) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Move coordinates out of bounds");
         }
         if (grid.getPiece(r, c) != PieceColour.NONE) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cell already occupied");
         }
         grid.setPiece(r, c, currentPlayer);
         currentPlayer = (currentPlayer == PieceColour.WHITE) ? PieceColour.BLACK : PieceColour.WHITE;
-        // Reset game status so it will be recalculated on demand
+        // Reset game status to be recalculated on next status check
         over = false;
         winner = PieceColour.NONE;
     }
 
-    /**
-     * Returns a deep copy of the grid.
-     */
     @Override
     public Grid getGrid() {
         return grid.copy();
     }
 
-    /**
-     * Returns a deep copy of the game.
-     */
     @Override
     public Game copy() {
         return new GameImpl(size, grid, currentPlayer, over, winner);
     }
 
     /**
-     * Updates the game status (over/winner) if not already over.
-     * Uses PathFinder to check for a win, otherwise checks for draw.
+     * Updates the game status by checking for win conditions or a draw.
+     * Sets the 'over' and 'winner' fields accordingly.
      */
     private void updateGameStatus() {
         if (over) return;
+        
+        // Check for winning paths
         if (PathFinder.topToBottom(grid, PieceColour.WHITE) || PathFinder.leftToRight(grid, PieceColour.WHITE)) {
             over = true;
             winner = PieceColour.WHITE;
@@ -139,16 +129,15 @@ public class GameImpl implements Game {
             over = true;
             winner = PieceColour.BLACK;
         } else {
-            // Check for draw: if no empty cells remain, it's a draw
+            // Check for draw (no empty cells left)
             boolean anyEmpty = false;
-            for (int r = 0; r < size; r++) {
+            for (int r = 0; r < size && !anyEmpty; r++) {
                 for (int c = 0; c < size; c++) {
                     if (grid.getPiece(r, c) == PieceColour.NONE) {
                         anyEmpty = true;
                         break;
                     }
                 }
-                if (anyEmpty) break;
             }
             if (!anyEmpty) {
                 over = true;
