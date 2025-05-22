@@ -1,9 +1,16 @@
 package game;
 
+/**
+ * Implementation of the Grid interface.
+ * Represents a square grid of PieceColour values.
+ */
 public class GridImpl implements Grid {
     private final int size;
     private final PieceColour[][] board;
 
+    /**
+     * Constructs a new empty grid of the given size.
+     */
     public GridImpl(int size) {
         this.size = size;
         this.board = new PieceColour[size][size];
@@ -12,6 +19,9 @@ public class GridImpl implements Grid {
                 board[r][c] = PieceColour.NONE;
     }
 
+    /**
+     * Copy constructor for deep copying the grid.
+     */
     private GridImpl(int size, PieceColour[][] board) {
         this.size = size;
         this.board = new PieceColour[size][size];
