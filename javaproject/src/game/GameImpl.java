@@ -65,7 +65,7 @@ public class GameImpl implements Game {
             throw new IllegalArgumentException();
         grid.setPiece(r, c, currentPlayer);
         currentPlayer = (currentPlayer == PieceColour.WHITE) ? PieceColour.BLACK : PieceColour.WHITE;
-        over = false; // will be recalculated on next query
+        over = false; 
         winner = PieceColour.NONE;
     }
 
