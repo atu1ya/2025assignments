@@ -2,10 +2,9 @@ package game.tests;
 
 import game.*;
 
-/**
- * Unit tests for the Game implementation.
- * Tests grid size validation, move validation, win/draw detection, and deep copy semantics.
- */
+// Tests for Game implementation 
+// Testing grid sizes, validity of player moves and win/draw logic
+
 public class GameTest extends Test {
     public static void main(String[] args) {
         // Test: constructing a game with size 0 should throw IllegalArgumentException
